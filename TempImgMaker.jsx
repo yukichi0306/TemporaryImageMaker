@@ -1,7 +1,7 @@
 ﻿/* 
 ==============================================================================================
 TemporaryImageMaker
-Last Update:2018/04/19
+Last Update:2018/04/20
 https://github.com/yukichi0306/
 ==============================================================================================
 */
@@ -12,14 +12,14 @@ uDlg = new Window('dialog','TempImgMaker',[0,0,480,280]);
 uDlg.center();
 uDlg.sText1 = uDlg.add("statictext",[0,16,480,16+24],"CSVから読み込んだ文字列を基に、仮データを作ります。");
 uDlg.sText1.justify = "center";
-uDlg.sText = uDlg.add("statictext",[86,76,86+50,76+24], "CSV :");
+uDlg.sText = uDlg.add("statictext",[86,76,86+54,76+24], "CSV :");
 uDlg.eText1 = uDlg.add("edittext",[148,76,148+200,76+24]);
 uDlg.csvBtn = uDlg.add("button",[354,76,354+48,76+24], "file", {name: "csv"});
-uDlg.sText = uDlg.add("statictext",[86,124,86+50,124+24], "保存先:");
+uDlg.sText = uDlg.add("statictext",[86,124,86+54,124+24], "保存先:");
 uDlg.eText2 = uDlg.add("edittext",[148,124,148+200,124+24]);
 uDlg.locatBtn = uDlg.add("button",[354,124,354+48,124+24], "folder", {name: "locat"});
-uDlg.sText = uDlg.add("statictext",[86,172,86+50,172+24], "保存形式:");
-uDlg.dList = uDlg.add("dropdownlist",[148,172,148+120,172+24],["Photoshop","PNG","Targa"]);
+uDlg.sText = uDlg.add("statictext",[86,172,86+54,172+24], "保存形式:");
+uDlg.dList = uDlg.add("dropdownlist",[148,172,148+140,172+24],["Photoshop (*.PSD)","PNG (*.PNG)","Targa (*.TGA)"]);
 uDlg.dList.selection=1;
 uDlg.cancelBtn = uDlg.add("button", [112,236,112+80,236+24], "キャンセル", {name: "cancel"});
 uDlg.okBtn = uDlg.add("button",[288,236,288+80,236+24], "作成", { name:"ok"});
@@ -87,14 +87,20 @@ uDlg.show();
 //CSVのデータを配列に=============================================================================
 function IdName()
 {
+IdArray = [];
 filename = uDlg.eText1.text;
 fileObj = new File(filename);
 flag = fileObj.open("r");
 if (flag == true)
 {
     var text = fileObj.read();
-    IdArray = text.split("\n");
+    TempArray = text.split("\n");
     fileObj.close();
+    //配列から空文字を排除する
+    for (var i=0; i < TempArray.length; ++i)
+    {
+        if (TempArray[i] !== "") IdArray.push(TempArray[i]);
+        }
 }
 else
 {
@@ -110,7 +116,7 @@ saveLocation = uDlg.eText2.text + "\\";
 //PSD save
 if(uDlg.dList.selection == 0)
 {
-    for(i=0; i<IdArray.length-1; i++)
+    for(i=0; i<IdArray.length; i++)
     {
     psdFile = new File(saveLocation+IdArray[i]+".psd");
     psdOpt = new PhotoshopSaveOptions();
@@ -125,7 +131,7 @@ if(uDlg.dList.selection == 0)
 //PNG save
 else if(uDlg.dList.selection == 1)
 {
-    for(i=0; i<IdArray.length-1; i++)
+    for(i=0; i<IdArray.length; i++)
     {
     pngFile = new File(saveLocation+IdArray[i]+".png");//パス指定とファイル名
     pngOpt = new PNGSaveOptions();
@@ -137,7 +143,7 @@ else if(uDlg.dList.selection == 1)
 //Targa save
 else if(uDlg.dList.selection == 2)
 {
-    for(i=0; i<IdArray.length-1; i++)
+    for(i=0; i<IdArray.length; i++)
     {
     targaFile = new File(saveLocation+IdArray[i]+".tga");
     tgaOpt = new TargaSaveOptions();
